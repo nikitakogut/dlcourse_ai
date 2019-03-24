@@ -20,7 +20,6 @@ def check_gradient(f, x, delta=1e-5, tol=1e-4):
 
     fx, analytic_grad = f(x)
     analytic_grad = analytic_grad.copy()
-    #display(analytic_grad)
 
     assert analytic_grad.shape == x.shape
 
@@ -35,8 +34,7 @@ def check_gradient(f, x, delta=1e-5, tol=1e-4):
         step = np.zeros(x.shape)
         step[ix] = 1
         numeric_grad_at_ix = (f(x + delta*step)[0] - f(x - delta*step)[0]) / (2*delta)
-        
-        #print(np.abs(numeric_grad_at_ix - analytic_grad_at_ix) / (numeric_grad_at_ix + np.finfo(float).eps))
+
         if not np.isclose(numeric_grad_at_ix, analytic_grad_at_ix, tol):
             print("Gradients are different at %s. Analytic: %2.5f, Numeric: %2.5f" % (
                   ix, analytic_grad_at_ix, numeric_grad_at_ix))
@@ -109,7 +107,7 @@ def check_layer_param_gradient(layer, x,
 
 
 def check_model_gradient(model, X, y,
-                         delta=1e-5, tol=1e-6):
+                         delta=1e-5, tol=1e-4):
     """
     Checks gradient correctness for all model parameters
 
