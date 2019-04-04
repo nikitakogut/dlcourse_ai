@@ -27,7 +27,8 @@ class Trainer:
                  num_epochs=20,
                  batch_size=20,
                  learning_rate=1e-3,
-                 learning_rate_decay=1.0):
+                 learning_rate_decay=1.0,
+                 early_stopping_rounds=20):
         """
         Initializes the trainer
 
@@ -46,8 +47,14 @@ class Trainer:
         self.optim = optim
         self.batch_size = batch_size
         self.learning_rate = learning_rate
+        self.initial_learning_rate = learning_rate
         self.num_epochs = num_epochs
         self.learning_rate_decay = learning_rate_decay
+        self. early_stopping_rounds =  early_stopping_rounds
+        
+        self.loss_history = []
+        self.train_acc_history = []
+        self.val_acc_history = []
 
         self.optimizers = None
 
@@ -74,18 +81,23 @@ class Trainer:
 
         return multiclass_accuracy(pred, y)
 
-    def fit(self):
+    def fit(self, new_learning_rate=None, new_reg = None):
         """
         Trains a model
         """
+        if new_learning_rate != None:
+            self.learning_rate = new_learning_rate
+        if new_reg != None:
+            self.model.reg = new_reg
+        
         if self.optimizers is None:
             self.setup_optimizers()
 
         num_train = self.dataset.train_X.shape[0]
 
-        loss_history = []
-        train_acc_history = []
-        val_acc_history = []
+        self.loss_history = []
+        self.train_acc_history = []
+        self.val_acc_history = []
         
         for epoch in range(self.num_epochs):
             shuffled_indices = np.arange(num_train)
@@ -123,12 +135,20 @@ class Trainer:
             val_accuracy = self.compute_accuracy(self.dataset.val_X,
                                                  self.dataset.val_y)
 
-            loss_history.append(ave_loss)
-            train_acc_history.append(train_accuracy)
-            val_acc_history.append(val_accuracy)
+            self.loss_history.append(ave_loss)
+            self.train_acc_history.append(train_accuracy)
+            self.val_acc_history.append(val_accuracy)
             
-            print("Loss: %f, Train accuracy: %f, val accuracy: %f" %
-                  (loss_history[-1], train_acc_history[-1], val_acc_history[-1]))
+            print("Epoch: %d, Loss: %f, Train accuracy: %f, Val accuracy: %f" %
+                  (epoch + 1, self.loss_history[-1], self.train_acc_history[-1], self.val_acc_history[-1]))
+            
+            if(len(self.loss_history) > self.early_stopping_rounds):
+                if not True in [x < self.loss_history[-self.early_stopping_rounds-1] for x in 
+                                self.loss_history[-self.early_stopping_rounds:]]:
+                    print('Stopping. Best iteration:')
+                    arg = np.argmax(self.val_acc_history)
+                    print("Epoch: %d, Loss: %f, Train accuracy: %f, Val accuracy: %f" %
+                  (arg + 1, self.loss_history[arg], self.train_acc_history[arg], self.val_acc_history[arg]))
+                    break
 
-
-        return loss_history, train_acc_history, val_acc_history
+        return self.loss_history, self.train_acc_history, self.val_acc_history

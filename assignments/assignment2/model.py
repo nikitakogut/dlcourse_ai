@@ -53,8 +53,9 @@ class TwoLayerNet:
         #raise Exception("Not implemented!")
         for layer in self.layers:
             for param_name, param in layer.params().items():
-                    loss += self.reg * np.sum(param.value ** 2)
-                    param.grad += self.reg * 2 * param.value
+                    loss_reg, grad_reg = l2_regularization(param.value, self.reg)
+                    loss += loss_reg
+                    param.grad += grad_reg
         return loss
 
     def predict(self, X):
