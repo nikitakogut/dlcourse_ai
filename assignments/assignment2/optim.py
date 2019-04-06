@@ -43,6 +43,5 @@ class MomentumSGD:
         # TODO Implement momentum update
         # Hint: you'll need to introduce some variables to remember
         # velocity from the previous updates
-        #raise Exception("Not implemented!")  
         self.velocity = self.momentum * self.velocity - d_w * learning_rate 
         return w + self.velocity

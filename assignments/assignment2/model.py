@@ -18,7 +18,6 @@ class TwoLayerNet:
         """
         self.reg = reg
         # TODO Create necessary layers
-        #raise Exception("Not implemented!")
         self.layers = [FullyConnectedLayer(n_input, hidden_layer_size), ReLULayer(),
                        FullyConnectedLayer(hidden_layer_size, n_output)]
 
@@ -35,7 +34,6 @@ class TwoLayerNet:
         # clear parameter gradients aggregated from the previous pass
         # TODO Set parameter gradient to zeros
         # Hint: using self.params() might be useful!
-        #raise Exception("Not implemented!")
         for layer in self.layers:
             if {'W', 'B'} <= set(layer.params()):
                 layer.W.grad = np.zeros(layer.W.value.shape)
@@ -50,7 +48,6 @@ class TwoLayerNet:
             backward_val = layer.backward(backward_val)
         # After that, implement l2 regularization on all params
         # Hint: self.params() is useful again!
-        #raise Exception("Not implemented!")
         for layer in self.layers:
             for param_name, param in layer.params().items():
                     loss_reg, grad_reg = l2_regularization(param.value, self.reg)
@@ -72,7 +69,6 @@ class TwoLayerNet:
         # Hint: some of the code of the compute_loss_and_gradients
         # can be reused
         pred = np.zeros(X.shape[0], np.int)
-        #raise Exception("Not implemented!")
         forward_val = X
         for layer in self.layers:
             forward_val = layer.forward(forward_val)
@@ -82,7 +78,6 @@ class TwoLayerNet:
     def params(self):
         result = {}
         # TODO Implement aggregating all of the params
-        #raise Exception("Not implemented!")
         for ind, layer in enumerate(self.layers):
             for param in layer.params().items():
                 result['layer_' + str(ind/2+1) + '_' + param[0]] = param[1]
